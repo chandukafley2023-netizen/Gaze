@@ -9,87 +9,510 @@
     
     <style>
         :root {
-            --primary-color: #00bfff;
-            --secondary-color: #fff;
+            --primary-color: #00bfff; /* App Brand Color */
+            --secondary-color: #f0f2f5; /* Light Gray Background */
+            --card-bg: #ffffff;
             --text-color: #222;
             --subtle-text: #666;
             --border-color: #e5e7eb;
-            --font-family: 'Inter', sans-serif;
-            --max-width: 600px;
             --footer-height: 60px;
+            --max-width: 600px;
         }
-        body { margin: 0; background-color: var(--secondary-color); font-family: var(--font-family); color: var(--text-color); padding-bottom: var(--footer-height); }
-        header { background-color: rgba(255, 255, 255, 0.95); border-bottom: 1px solid var(--border-color); padding: 10px 15px; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-weight: 700; }
-        .header-icons i { font-size: 1.3rem; margin-left: 15px; color: var(--text-color); }
 
-        .app-container { max-width: var(--max-width); margin: 0 auto; }
-        .profile-top { padding: 20px 15px; display: flex; align-items: center; }
-        .profile-pic-lg { width: 80px; height: 80px; border-radius: 50%; margin-right: 20px; border: 1px solid #ddd; object-fit: cover; }
-        .profile-stats { display: flex; flex: 1; justify-content: space-around; text-align: center; }
+        body {
+            margin: 0;
+            background-color: var(--secondary-color);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-color);
+            padding-bottom: var(--footer-height);
+            overflow-x: hidden;
+        }
+
+        /* --- UTILITY --- */
+        .hidden { display: none !important; }
+
+        /* --- HEADER --- */
+        header {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50px;
+        }
+
+        .logo { font-weight: 700; font-size: 1.2rem; color: var(--text-color); }
+        .logo span { color: var(--primary-color); }
+
+        .header-icons {
+            position: absolute;
+            right: 15px;
+            font-size: 1.2rem;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        /* --- PROFILE VIEW STYLES --- */
+        .profile-hero {
+            background-color: var(--card-bg);
+            padding-bottom: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .cover-photo {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(to right, #00bfff, #00d2ff);
+            position: relative;
+        }
+
+        .profile-pic-wrapper {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid var(--card-bg);
+            margin: -50px auto 10px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .profile-pic-lg {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-name { font-size: 1.5rem; font-weight: 700; margin-bottom: 5px; }
+        .profile-bio-text { color: var(--subtle-text); font-size: 0.9rem; max-width: 80%; margin: 0 auto 15px; }
+
+        .profile-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        .stat-box { text-align: center; }
         .stat-num { display: block; font-weight: 700; font-size: 1.1rem; }
         .stat-label { font-size: 0.8rem; color: var(--subtle-text); }
-        
-        .profile-bio { padding: 0 15px 15px; font-size: 0.9rem; }
-        .edit-profile-btn { display: block; margin: 0 15px 20px; padding: 6px; background: #fff; border: 1px solid #dbdbdb; border-radius: 4px; text-align: center; font-weight: 600; font-size: 0.9rem; color: var(--text-color); cursor: pointer; text-decoration: none; }
 
-        .explore-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
-        .explore-item { aspect-ratio: 1/1; background: #eee; }
+        .profile-actions { display: flex; justify-content: center; gap: 10px; padding: 0 20px; }
+        
+        .btn {
+            padding: 10px 25px;
+            border-radius: 20px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s;
+        }
+        
+        .btn:hover { transform: scale(1.1); }
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: #009acd; }
+
+        /* --- CONTENT TABS & GRID --- */
+        .content-area { max-width: var(--max-width); margin: 20px auto; padding: 0 15px; }
+
+        .profile-tabs {
+            display: flex;
+            justify-content: center;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            background: var(--card-bg);
+            border-radius: 8px 8px 0 0;
+        }
+        .tab-item {
+            padding: 15px 20px;
+            font-weight: 600;
+            color: var(--subtle-text);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-item.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        .tab-item i { margin-right: 8px; }
+
+        .explore-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+        }
+        .explore-item {
+            aspect-ratio: 1/1;
+            background: #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .explore-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
         .explore-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-        footer { background-color: #fff; border-top: 1px solid var(--border-color); height: var(--footer-height); position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
+        /* --- FOOTER --- */
+        footer {
+            background-color: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            height: var(--footer-height);
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+        }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #999; text-decoration: none; width: 25%; }
         .nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
         .nav-item span { font-size: 0.7rem; font-weight: 500; }
         .nav-item.active { color: var(--primary-color); }
+
+        /* --- EDIT & PERSONAL INFO VIEW STYLES --- */
+        .edit-container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            background: var(--card-bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 20px;
+        }
+        .edit-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-title { font-weight: 700; font-size: 1.1rem; }
+        .back-btn { font-size: 1.2rem; cursor: pointer; color: var(--text-color); background: none; border: none;}
+        .save-btn { color: var(--primary-color); font-weight: 700; cursor: pointer; border: none; background: none; font-size: 1rem; }
+
+        .edit-content { padding: 20px; }
+        .photo-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 30px; }
+        .change-photo-btn { color: var(--primary-color); font-weight: 600; font-size: 0.9rem; cursor: pointer; margin-top: 10px; }
+
+        .form-group { margin-bottom: 20px; }
+        .label { display: block; font-size: 0.85rem; color: #666; margin-bottom: 5px; }
+        .input-field {
+            width: 100%; padding: 10px 0; border: none; border-bottom: 1px solid var(--border-color);
+            font-size: 1rem; font-family: inherit; outline: none; box-sizing: border-box; background: transparent;
+        }
+        .input-field:focus { border-bottom-color: var(--primary-color); }
+        textarea.input-field { resize: none; }
+        
+        .settings-link {
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 1rem;
+            display: block;
+            margin-top: 20px;
+        }
+
+        .personal-info-row {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .personal-info-row .info-label { font-size: 0.85rem; color: #666; margin-bottom: 4px;}
+        .personal-info-row .info-value { font-size: 1rem; font-weight: 500; }
+
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">my_art_gallery</div>
-        <div class="header-icons">
-            <i class="fas fa-bars"></i>
-        </div>
-    </header>
+    <!-- ==================== PROFILE VIEW ==================== -->
+    <div id="profile-view">
+        <!-- Header -->
+        <header>
+            <div class="logo">Art<span>&</span>Share</div>
+            <i class="fas fa-cog header-icons"></i>
+        </header>
 
-    <div class="app-container">
-        <div class="profile-top">
-            <img src="https://placehold.co/100x100/333/fff?text=Me" class="profile-pic-lg">
+        <!-- Profile Hero Section -->
+        <div class="profile-hero">
+            <div class="cover-photo"></div>
+            
+            <div class="profile-pic-wrapper">
+                <!-- Added ID -->
+                <img src="https://placehold.co/100x100/333/fff?text=Me" class="profile-pic-lg" id="view-profile-pic">
+            </div>
+            
+            <div class="profile-name" id="display-name">My Art Gallery</div>
+            <div class="profile-bio-text" id="display-bio">Creating digital dreams 🎨 | Based in Bhutan 🇧🇹</div>
+
+            <!-- Stats -->
             <div class="profile-stats">
-                <div><span class="stat-num">12</span><span class="stat-label">Posts</span></div>
-                <div><span class="stat-num">450</span><span class="stat-label">Followers</span></div>
-                <div><span class="stat-num">210</span><span class="stat-label">Following</span></div>
+                <div class="stat-box">
+                    <span class="stat-num">1</span>
+                    <span class="stat-label">Posts</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-num">0</span>
+                    <span class="stat-label">Followers</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-num">0</span>
+                    <span class="stat-label">Following</span>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="profile-actions">
+                <button class="btn btn-primary" onclick="showEditView()">Edit Profile</button>
             </div>
         </div>
-        <div class="profile-bio">
-            <strong>My Art Gallery</strong><br>
-            🎨 Sharing my daily sketches.<br>
-            📍 Bhutan<br>
-            🔗 www.mysite.com
+
+        <!-- Main Content Area -->
+        <div class="content-area">
+            <!-- Tabs -->
+            <div class="profile-tabs">
+                <div class="tab-item active"><i class="fas fa-th"></i> Posts</div>
+                <div class="tab-item"><i class="far fa-bookmark"></i> Saved</div>
+                <div class="tab-item"><i class="far fa-id-badge"></i> Tagged</div>
+            </div>
+
+            <!-- Posts Grid -->
+            <div class="explore-grid">
+                <div class="explore-item"><img src="https://druksell.bt/cdn/shop/files/choki-art-3_700x700.jpg?v=1699412678"></div>
+                <div class="explore-item"><img src="https://placehold.co/200x200/444/fff?text=Art+2"></div>
+                <div class="explore-item"><img src="https://placehold.co/200x200/555/fff?text=Art+3"></div>
+                <div class="explore-item"><img src="https://placehold.co/200x200/666/fff?text=Art+4"></div>
+                <div class="explore-item"><img src="https://placehold.co/200x200/777/fff?text=Art+5"></div>
+                <div class="explore-item"><img src="https://placehold.co/200x200/888/fff?text=Art+6"></div>
+            </div>
         </div>
-        <a href="#" class="edit-profile-btn">Edit Profile</a>
-        
-        <div class="explore-grid">
-            <div class="explore-item"><img src="https://placehold.co/200x200/333/fff?text=My1"></div>
-            <div class="explore-item"><img src="https://placehold.co/200x200/444/fff?text=My2"></div>
-            <div class="explore-item"><img src="https://placehold.co/200x200/555/fff?text=My3"></div>
+
+        <!-- Navigation Footer -->
+        <footer>
+            <a href="index.html" class="nav-item">
+                <i class="fas fa-home"></i><span>Home</span>
+            </a>
+            <a href="explore.html" class="nav-item">
+                <i class="fas fa-compass"></i><span>Explore</span>
+            </a>
+            <a href="create.html" class="nav-item">
+                <i class="fas fa-plus-square"></i><span>Create</span>
+            </a>
+            <a href="profile.html" class="nav-item active">
+                <i class="fas fa-user-circle"></i><span>Profile</span>
+            </a>
+        </footer>
+    </div>
+
+    <!-- ==================== EDIT PROFILE VIEW (Hidden by default) ==================== -->
+    <div id="edit-view" class="edit-container hidden">
+        <div class="edit-header">
+            <button class="back-btn" onclick="hideEditView()"><i class="fas fa-arrow-left"></i></button>
+            <div class="header-title">Edit Profile</div>
+            <button class="save-btn" onclick="saveProfileChanges()">Save</button>
+        </div>
+
+        <div class="edit-content">
+            <div class="photo-section">
+                <!-- Added ID -->
+                <img src="https://placehold.co/100x100/333/fff?text=Me" class="profile-pic-lg" id="edit-profile-pic" style="width: 100px; height: 100px;">
+                <!-- File Input (Hidden) -->
+                <input type="file" id="profile-upload" accept="image/*" style="display: none;">
+                <!-- Trigger Button -->
+                <div class="change-photo-btn" onclick="document.getElementById('profile-upload').click()">Change Profile Photo</div>
+            </div>
+
+            <div class="form-group">
+                <label class="label">Name</label>
+                <input type="text" class="input-field" id="edit-name" value="My Art Gallery">
+            </div>
+
+            <div class="form-group">
+                <label class="label">Username</label>
+                <input type="text" class="input-field" id="edit-username" value="my_art_gallery">
+            </div>
+
+            <div class="form-group">
+                <label class="label">Bio</label>
+                <textarea class="input-field" id="edit-bio" rows="3">Creating digital dreams 🎨 | Based in Bhutan 🇧🇹</textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="label">Website</label>
+                <input type="text" class="input-field" id="edit-website" value="www.mysite.com">
+            </div>
+            
+            <div class="form-group" style="margin-top: 20px;">
+                <div class="settings-link" onclick="showPersonalInfo()">Personal Information Settings</div>
+            </div>
         </div>
     </div>
 
-    <footer>
-        <a href="index.html" class="nav-item">
-            <i class="fas fa-home"></i><span>Home</span>
-        </a>
-        <a href="explore.html" class="nav-item">
-            <i class="fas fa-compass"></i><span>Explore</span>
-        </a>
-        <a href="create.html" class="nav-item">
-            <i class="fas fa-plus-square"></i><span>Create</span>
-        </a>
-        <a href="profile.html" class="nav-item active">
-            <i class="fas fa-user-circle"></i><span>Profile</span>
-        </a>
-    </footer>
+    <!-- ==================== PERSONAL INFO VIEW (Hidden by default) ==================== -->
+    <div id="personal-info-view" class="edit-container hidden">
+        <div class="edit-header">
+            <button class="back-btn" onclick="hidePersonalInfo()"><i class="fas fa-arrow-left"></i></button>
+            <div class="header-title">Personal Information</div>
+            <div style="width: 20px;"></div>
+        </div>
+
+        <div class="edit-content">
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 20px;">
+                Provide your personal information, even if the account is used for a business, a pet or something else. This won't be part of your public profile.
+            </p>
+
+            <div class="personal-info-row">
+                <div class="info-label">E-mail Address</div>
+                <div class="info-value">chandan.kalfey2023@academy.bt</div>
+            </div>
+
+            <div class="personal-info-row">
+                <div class="info-label">Phone Number</div>
+                <div class="info-value">+975 17 00 00 00</div>
+            </div>
+
+            <div class="personal-info-row">
+                <div class="info-label">Gender</div>
+                <div class="info-value">Male</div>
+            </div>
+
+            <div class="personal-info-row">
+                <div class="info-label">Birthday</div>
+                <div class="info-value">23 October 2009</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const profileView = document.getElementById('profile-view');
+        const editView = document.getElementById('edit-view');
+        const personalInfoView = document.getElementById('personal-info-view');
+
+        // Display Elements
+        const displayName = document.getElementById('display-name');
+        const displayBio = document.getElementById('display-bio');
+        const viewProfilePic = document.getElementById('view-profile-pic');
+
+        // Input Elements
+        const editNameInput = document.getElementById('edit-name');
+        const editBioInput = document.getElementById('edit-bio');
+        const editUsernameInput = document.getElementById('edit-username');
+        const editWebsiteInput = document.getElementById('edit-website');
+        const editProfilePic = document.getElementById('edit-profile-pic');
+        const fileInput = document.getElementById('profile-upload');
+
+        // Variable to hold new image data temporarily
+        let tempProfilePicData = null;
+
+        // --- FILE UPLOAD LOGIC ---
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    // Update preview immediately
+                    editProfilePic.src = event.target.result;
+                    // Store data to be saved later
+                    tempProfilePicData = event.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // --- NAVIGATION FUNCTIONS ---
+
+        function showEditView() {
+            // Pre-populate inputs
+            editNameInput.value = displayName.textContent;
+            editBioInput.value = displayBio.textContent;
+            // Ensure edit view image matches current view image if no temp change
+            if (!tempProfilePicData) {
+                editProfilePic.src = viewProfilePic.src;
+            }
+            
+            profileView.classList.add('hidden');
+            editView.classList.remove('hidden');
+            window.scrollTo(0, 0); 
+        }
+
+        function hideEditView() {
+            editView.classList.add('hidden');
+            profileView.classList.remove('hidden');
+            window.scrollTo(0, 0); 
+            // Reset temp data if canceled (optional, but good UX)
+            // For now, we keep it simple.
+        }
+
+        function showPersonalInfo() {
+            editView.classList.add('hidden');
+            personalInfoView.classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function hidePersonalInfo() {
+            personalInfoView.classList.add('hidden');
+            editView.classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        // --- DATA SAVING (LocalStorage) ---
+
+        function saveProfileChanges() {
+            // Update Text UI
+            displayName.textContent = editNameInput.value;
+            displayBio.textContent = editBioInput.value;
+
+            // Update Image UI if changed
+            if (tempProfilePicData) {
+                viewProfilePic.src = tempProfilePicData;
+            }
+
+            // Save to Local Storage
+            const profileData = {
+                name: editNameInput.value,
+                bio: editBioInput.value,
+                username: editUsernameInput.value,
+                website: editWebsiteInput.value,
+                // Use new image if exists, otherwise keep existing src
+                profilePic: tempProfilePicData || viewProfilePic.src
+            };
+            localStorage.setItem('userProfile', JSON.stringify(profileData));
+
+            hideEditView();
+        }
+
+        function loadProfileData() {
+            const savedData = localStorage.getItem('userProfile');
+            if (savedData) {
+                const profile = JSON.parse(savedData);
+                
+                if(profile.name) displayName.textContent = profile.name;
+                if(profile.bio) displayBio.textContent = profile.bio;
+                
+                // Load saved image
+                if(profile.profilePic) {
+                    viewProfilePic.src = profile.profilePic;
+                    editProfilePic.src = profile.profilePic; // Also update edit view
+                }
+
+                if(profile.name) editNameInput.value = profile.name;
+                if(profile.bio) editBioInput.value = profile.bio;
+                if(profile.username) editUsernameInput.value = profile.username;
+                if(profile.website) editWebsiteInput.value = profile.website;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProfileData);
+
+    </script>
 </body>
 </html>

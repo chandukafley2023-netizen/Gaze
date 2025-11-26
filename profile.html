@@ -6,7 +6,13 @@
     <title>Art&Share - Profile</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    
+    <script>
+    // Check if user is logged in
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+        // If not, redirect to login page
+        window.location.href = 'login.html';
+    }
+</script>
     <style>
         :root {
             --primary-color: #00bfff; /* App Brand Color */
@@ -15,8 +21,19 @@
             --text-color: #222;
             --subtle-text: #666;
             --border-color: #e5e7eb;
+            --hover-bg: #f5f5f5; /* Added for hover states */
             --footer-height: 60px;
             --max-width: 600px;
+        }
+
+        /* --- Dark Mode Variables Override --- */
+        body.dark-mode {
+            --secondary-color: #000000;
+            --card-bg: #121212;
+            --text-color: #e0e0e0;
+            --subtle-text: #a0a0a0;
+            --border-color: #333333;
+            --hover-bg: #1e1e1e;
         }
 
         body {
@@ -26,6 +43,7 @@
             color: var(--text-color);
             padding-bottom: var(--footer-height);
             overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* --- UTILITY --- */
@@ -40,39 +58,74 @@
             top: 0;
             z-index: 1000;
             display: flex;
-            justify-content: center;
+            justify-content: space-between; /* Changed to space-between for menu */
             align-items: center;
             height: 60px;
+            transition: background-color 0.3s ease;
         }
 
-        /* Updated Logo Style: Bubble with Blue Outline */
+        /* Logo Style: Bubble with Blue Outline */
         .logo { 
-            font-family: 'Inter', sans-serif; /* Reverted to original font */
+            font-family: 'Inter', sans-serif;
             font-weight: 800;
-            font-size: 1.8rem; /* Kept size 1.8rem */
-            color: var(--text-color); /* Original Black text */
-            
-            /* The Blue Bubble Wrapper */
-            border: 3px solid var(--primary-color); /* Blue wraps around */
-            border-radius: 50px; /* Bubble shape */
+            font-size: 1.8rem;
+            color: var(--text-color);
+            border: 3px solid var(--primary-color);
+            border-radius: 50px;
             padding: 5px 25px;
-            background-color: #fff;
-            
+            background-color: var(--card-bg); /* Adapts to dark mode */
             cursor: pointer;
             display: inline-block;
             box-shadow: 0 4px 6px rgba(0, 191, 255, 0.1);
+            transition: background-color 0.3s ease;
         }
         
         .logo span { 
-            color: var(--primary-color); /* Original Blue '&' */
+            color: var(--primary-color);
         }
 
-        .header-icons {
-            position: absolute;
-            right: 15px;
-            font-size: 1.2rem;
+        /* --- Menu & Dropdown Styles --- */
+        .header-actions { position: relative; }
+        .menu-trigger {
+            font-size: 1.3rem;
             color: var(--text-color);
             cursor: pointer;
+            padding: 5px;
+        }
+
+        /* Dropdown Menu */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            width: 200px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--border-color);
+            padding: 8px 0;
+            z-index: 2000;
+        }
+
+        .dropdown-menu.show { display: block; animation: fadeIn 0.2s ease; }
+
+        .dropdown-item {
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: background 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .dropdown-item:hover { background-color: var(--hover-bg); }
+        .dropdown-item i { width: 25px; color: var(--subtle-text); font-size: 1.1rem; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* --- PROFILE VIEW STYLES --- */
@@ -81,6 +134,7 @@
             padding-bottom: 20px;
             text-align: center;
             border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
         }
 
         .cover-photo {
@@ -98,6 +152,7 @@
             margin: -50px auto 10px;
             position: relative;
             z-index: 10;
+            transition: border-color 0.3s ease;
         }
         
         .profile-pic-lg {
@@ -148,6 +203,7 @@
             margin-bottom: 20px;
             background: var(--card-bg);
             border-radius: 8px 8px 0 0;
+            transition: background-color 0.3s ease;
         }
         .tab-item {
             padding: 15px 20px;
@@ -169,7 +225,7 @@
         }
         .explore-item {
             aspect-ratio: 1/1;
-            background: #eee;
+            background: var(--hover-bg); /* Adapts to dark mode */
             border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
@@ -193,8 +249,9 @@
             justify-content: space-around;
             align-items: center;
             z-index: 1000;
+            transition: background-color 0.3s ease;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #999; text-decoration: none; width: 25%; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--subtle-text); text-decoration: none; width: 25%; }
         .nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
         .nav-item span { font-size: 0.7rem; font-weight: 500; }
         .nav-item.active { color: var(--primary-color); }
@@ -208,6 +265,7 @@
             display: flex;
             flex-direction: column;
             padding-bottom: 20px;
+            transition: background-color 0.3s ease;
         }
         .edit-header {
             padding: 15px;
@@ -225,10 +283,11 @@
         .change-photo-btn { color: var(--primary-color); font-weight: 600; font-size: 0.9rem; cursor: pointer; margin-top: 10px; }
 
         .form-group { margin-bottom: 20px; }
-        .label { display: block; font-size: 0.85rem; color: #666; margin-bottom: 5px; }
+        .label { display: block; font-size: 0.85rem; color: var(--subtle-text); margin-bottom: 5px; }
         .input-field {
             width: 100%; padding: 10px 0; border: none; border-bottom: 1px solid var(--border-color);
             font-size: 1rem; font-family: inherit; outline: none; box-sizing: border-box; background: transparent;
+            color: var(--text-color);
         }
         .input-field:focus { border-bottom-color: var(--primary-color); }
         textarea.input-field { resize: none; }
@@ -243,9 +302,9 @@
 
         .personal-info-row {
             padding: 15px 0;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-color);
         }
-        .personal-info-row .info-label { font-size: 0.85rem; color: #666; margin-bottom: 4px;}
+        .personal-info-row .info-label { font-size: 0.85rem; color: var(--subtle-text); margin-bottom: 4px;}
         .personal-info-row .info-value { font-size: 1rem; font-weight: 500; }
 
     </style>
@@ -256,9 +315,30 @@
     <div id="profile-view">
         <!-- Header -->
         <header>
-            <!-- Logo with Blue Bubble Border -->
             <div class="logo">Art<span>&</span>Share</div>
-            <i class="fas fa-cog header-icons"></i>
+            <!-- Hamburger Menu -->
+            <div class="header-actions">
+                <div class="menu-trigger" onclick="toggleMenu()">
+                    <i class="fas fa-bars"></i>
+                </div>
+                
+                <!-- Dropdown Content -->
+                <div class="dropdown-menu" id="profileDropdown">
+                    <a href="#" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="#" class="dropdown-item"><i class="far fa-bookmark"></i> Saved</a>
+                    <a href="#" class="dropdown-item"><i class="fas fa-chart-bar"></i> Your Activity</a>
+                    
+                    <!-- Dark Mode Toggle -->
+                    <a href="#" class="dropdown-item" id="darkModeToggle">
+                        <i class="far fa-moon" id="darkModeIcon"></i> <span id="darkModeText">Dark Mode</span>
+                    </a>
+                    
+                    <div style="border-top: 1px solid var(--border-color); margin: 5px 0;"></div>
+                    <a href="#" class="dropdown-item" style="color: #ff5722;">
+                        <i class="fas fa-sign-out-alt" style="color: #ff5722;"></i> Log Out
+                    </a>
+                </div>
+            </div>
         </header>
 
         <!-- Profile Hero Section -->
@@ -331,7 +411,7 @@
         </footer>
     </div>
 
-    <!-- ==================== EDIT PROFILE VIEW (Hidden by default) ==================== -->
+    <!-- ==================== EDIT PROFILE VIEW ==================== -->
     <div id="edit-view" class="edit-container hidden">
         <div class="edit-header">
             <button class="back-btn" onclick="hideEditView()"><i class="fas fa-arrow-left"></i></button>
@@ -372,7 +452,7 @@
         </div>
     </div>
 
-    <!-- ==================== PERSONAL INFO VIEW (Hidden by default) ==================== -->
+    <!-- ==================== PERSONAL INFO VIEW ==================== -->
     <div id="personal-info-view" class="edit-container hidden">
         <div class="edit-header">
             <button class="back-btn" onclick="hidePersonalInfo()"><i class="fas fa-arrow-left"></i></button>
@@ -381,7 +461,7 @@
         </div>
 
         <div class="edit-content">
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 20px;">
+            <p style="font-size: 0.85rem; color: var(--subtle-text); margin-bottom: 20px;">
                 Provide your personal information, even if the account is used for a business, a pet or something else. This won't be part of your public profile.
             </p>
 
@@ -408,17 +488,15 @@
     </div>
 
     <script>
-        // DOM Elements
+        // --- DOM Elements ---
         const profileView = document.getElementById('profile-view');
         const editView = document.getElementById('edit-view');
         const personalInfoView = document.getElementById('personal-info-view');
 
-        // Display Elements
         const displayName = document.getElementById('display-name');
         const displayBio = document.getElementById('display-bio');
         const viewProfilePic = document.getElementById('view-profile-pic');
 
-        // Input Elements
         const editNameInput = document.getElementById('edit-name');
         const editBioInput = document.getElementById('edit-bio');
         const editUsernameInput = document.getElementById('edit-username');
@@ -426,26 +504,76 @@
         const editProfilePic = document.getElementById('edit-profile-pic');
         const fileInput = document.getElementById('profile-upload');
 
-        // Variable to hold new image data temporarily
         let tempProfilePicData = null;
 
-        // --- FILE UPLOAD LOGIC ---
+        // --- Toggle Menu Logic ---
+        function toggleMenu() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.closest('.header-actions')) {
+                const dropdowns = document.getElementsByClassName("dropdown-menu");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
+        // --- Dark Mode Logic ---
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+        const icon = document.getElementById('darkModeIcon');
+        const text = document.getElementById('darkModeText');
+
+        const enableDarkMode = () => {
+            body.classList.add('dark-mode');
+            if(icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
+            if(text) text.textContent = "Light Mode";
+            localStorage.setItem('darkMode', 'enabled');
+        };
+
+        const disableDarkMode = () => {
+            body.classList.remove('dark-mode');
+            if(icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+            if(text) text.textContent = "Dark Mode";
+            localStorage.setItem('darkMode', 'disabled');
+        };
+
+        // Check Local Storage on Load
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            enableDarkMode();
+        }
+
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (body.classList.contains('dark-mode')) {
+                    disableDarkMode();
+                } else {
+                    enableDarkMode();
+                }
+            });
+        }
+
+        // --- File Upload Logic ---
         fileInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
-                    // Update preview immediately
                     editProfilePic.src = event.target.result;
-                    // Store data to be saved later
                     tempProfilePicData = event.target.result;
                 }
                 reader.readAsDataURL(file);
             }
         });
 
-        // --- NAVIGATION FUNCTIONS ---
-
+        // --- Navigation Functions ---
         function showEditView() {
             editNameInput.value = displayName.textContent;
             editBioInput.value = displayBio.textContent;
@@ -476,8 +604,7 @@
             window.scrollTo(0, 0);
         }
 
-        // --- DATA SAVING (LocalStorage) ---
-
+        // --- Data Persistence ---
         function saveProfileChanges() {
             displayName.textContent = editNameInput.value;
             displayBio.textContent = editBioInput.value;
@@ -521,5 +648,90 @@
         document.addEventListener('DOMContentLoaded', loadProfileData);
 
     </script>
+    <script>
+    // ... (Your existing dark mode/menu scripts here) ...
+
+    // --- LOAD USER POSTS ---
+    function loadUserPosts() {
+        const posts = JSON.parse(localStorage.getItem('artSharePosts')) || [];
+        const mainContainer = document.querySelector('main');
+        
+        // Loop through posts and add them to the TOP of the main container
+        // We iterate in reverse so the newest (which is at index 0) stays at top
+        // Or simply use insertAdjacentHTML('afterbegin')
+        
+        // Remove this loop if you want to keep mock posts below user posts
+        // iterating backwards to keep order correct when using afterbegin
+        for (let i = posts.length - 1; i >= 0; i--) {
+            const post = posts[i];
+            
+            const postHTML = `
+            <div class="art-post">
+                <div class="post-header">
+                    <div class="user-info">
+                        <img class="avatar" src="${post.userAvatar}" alt="User Avatar">
+                        <div class="username">${post.username}</div>
+                    </div>
+                    <i class="fas fa-ellipsis-h post-options"></i>
+                </div>
+                
+                <div class="post-image-container">
+                    <img class="post-image" src="${post.image}" alt="User Post">
+                </div>
+
+                <div class="post-actions">
+                    <i class="far fa-heart post-like-btn" onclick="this.classList.toggle('fas');this.classList.toggle('far');this.style.color=this.classList.contains('fas')?'red':'inherit'"></i>
+                    <i class="far fa-comment"></i>
+                    <i class="far fa-paper-plane"></i>
+                    <i class="far fa-bookmark last"></i>
+                </div>
+                
+                <span class="likes-count">0 likes</span>
+
+                <div class="post-caption">
+                    <span class="user-link">${post.username}</span> ${post.caption}
+                </div>
+            </div>
+            `;
+            
+            mainContainer.insertAdjacentHTML('afterbegin', postHTML);
+        }
+    }
+
+    // Call this when page loads
+    loadUserPosts();
+</script>
+
+#### 2. Add this to `profile.html` (Profile Page)
+Put this script at the bottom of your `profile.html` file. It adds the posts to your grid and updates the "Posts" count.
+
+```html
+<script>
+    // ... (Your existing scripts) ...
+
+    // --- LOAD USER POSTS TO GRID ---
+    function loadProfileGrid() {
+        const posts = JSON.parse(localStorage.getItem('artSharePosts')) || [];
+        const gridContainer = document.querySelector('.explore-grid');
+        const statCount = document.querySelector('.stat-num'); // The first one is Posts count
+
+        // Update Post Count
+        // Existing static count is 1, so we add length of new posts
+        if(statCount) statCount.textContent = 1 + posts.length;
+
+        // Add posts to grid
+        posts.forEach(post => {
+            const gridHTML = `
+                <div class="explore-item">
+                    <img src="${post.image}" alt="My Post">
+                </div>
+            `;
+            // Add to beginning of grid
+            gridContainer.insertAdjacentHTML('afterbegin', gridHTML);
+        });
+    }
+
+    loadProfileGrid();
+</script>
 </body>
 </html>

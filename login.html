@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Art&Share - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --primary-color: #00bfff; --secondary-color: #fff; --text-color: #222; --subtle-text: #666; --border-color: #e5e7eb; --card-bg: #ffffff; --input-bg: #f9f9f9; --font-family: 'Inter', sans-serif; --max-width: 400px; }
+        body.dark-mode { --secondary-color: #000000; --card-bg: #121212; --text-color: #e0e0e0; --subtle-text: #a0a0a0; --border-color: #333333; --input-bg: #1e1e1e; }
+        body { margin: 0; background-color: var(--secondary-color); font-family: var(--font-family); color: var(--text-color); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; box-sizing: border-box; transition: background-color 0.3s ease; }
+        .logo { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 2rem; color: var(--text-color); border: 3px solid var(--primary-color); border-radius: 50px; padding: 8px 30px; background-color: var(--card-bg); display: inline-block; margin-bottom: 30px; box-shadow: 0 4px 10px rgba(0, 191, 255, 0.15); }
+        .logo span { color: var(--primary-color); }
+        .auth-card { width: 100%; max-width: var(--max-width); background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 40px 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); text-align: center; }
+        .auth-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-field { width: 100%; padding: 14px; border: 1px solid var(--border-color); background-color: var(--input-bg); border-radius: 8px; font-size: 0.95rem; color: var(--text-color); box-sizing: border-box; outline: none; }
+        .input-field:focus { border-color: var(--primary-color); }
+        .btn-primary { width: 100%; padding: 14px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; margin-top: 10px; }
+        .auth-switch { margin-top: 20px; font-size: 0.9rem; color: var(--subtle-text); }
+        .link { color: var(--primary-color); font-weight: 600; cursor: pointer; }
+        .hidden { display: none; }
+        .error-msg { color: #ff5722; font-size: 0.85rem; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="logo">Art<span>&</span>Share</div>
+
+    <div class="auth-card">
+        <!-- LOGIN FORM -->
+        <div id="login-form">
+            <div class="auth-title">Welcome Back</div>
+            <div class="input-group"><input type="email" id="login-email" class="input-field" placeholder="Email Address"></div>
+            <div class="input-group"><input type="password" id="login-pass" class="input-field" placeholder="Password"></div>
+            <button class="btn-primary" id="btn-login">Log In</button>
+            <div class="error-msg" id="login-error"></div>
+            <div class="auth-switch">Don't have an account? <span class="link" onclick="toggleAuthMode()">Sign up</span></div>
+        </div>
+
+        <!-- SIGN UP FORM -->
+        <div id="signup-form" class="hidden">
+            <div class="auth-title">Create Account</div>
+            <div class="input-group"><input type="email" id="signup-email" class="input-field" placeholder="Email Address"></div>
+            <div class="input-group"><input type="password" id="signup-pass" class="input-field" placeholder="Password (Min 6 chars)"></div>
+            <button class="btn-primary" id="btn-signup">Sign Up</button>
+            <div class="error-msg" id="signup-error"></div>
+            <div class="auth-switch">Have an account? <span class="link" onclick="toggleAuthMode()">Log in</span></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // Initialize Firebase
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Check if already logged in
+        onAuthStateChanged(auth, (user) => {
+            if (user) window.location.href = 'index.html';
+        });
+
+        // UI Logic
+        window.toggleAuthMode = () => {
+            document.getElementById('login-form').classList.toggle('hidden');
+            document.getElementById('signup-form').classList.toggle('hidden');
+        };
+
+        // Sign Up
+        document.getElementById('btn-signup').addEventListener('click', async () => {
+            const email = document.getElementById('signup-email').value;
+            const pass = document.getElementById('signup-pass').value;
+            const errorDiv = document.getElementById('signup-error');
+            
+            try {
+                await createUserWithEmailAndPassword(auth, email, pass);
+                // Redirect happens automatically via onAuthStateChanged
+            } catch (error) {
+                errorDiv.textContent = error.message.replace('Firebase: ', '');
+                errorDiv.style.display = 'block';
+            }
+        });
+
+        // Log In
+        document.getElementById('btn-login').addEventListener('click', async () => {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            const errorDiv = document.getElementById('login-error');
+
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } catch (error) {
+                errorDiv.textContent = "Invalid email or password.";
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

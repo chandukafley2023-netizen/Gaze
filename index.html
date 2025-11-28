@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Art&Share - Home</title>
+    <title>MUSE - Home</title>
+    <!-- Font Awesome for social icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,8 +19,8 @@
             --text-color: #222;
             --subtle-text: #666;
             --border-color: #e5e7eb;
-            --card-bg: #ffffff;        /* New variable for card/menu backgrounds */
-            --hover-bg: #f5f5f5;       /* New variable for hover states */
+            --card-bg: #ffffff;       /* New variable for card/menu backgrounds */
+            --hover-bg: #f5f5f5;      /* New variable for hover states */
             --font-family: 'Inter', Arial, sans-serif;
             --max-width: 600px; /* Standard feed width */
         }
@@ -62,7 +63,7 @@
             transition: background-color 0.3s ease;
         }
 
-        /* Updated Logo Style to match Profile Page */
+        /* Updated Logo Style */
         .logo { 
             font-family: 'Inter', sans-serif;
             font-weight: 800;
@@ -72,21 +73,23 @@
             /* The Blue Bubble Wrapper */
             border: 2px solid var(--primary-color);
             border-radius: 50px;
-            padding: 4px 15px;
+            padding: 4px 20px; /* Slightly wider for MUSE */
             background-color: var(--card-bg); /* Adapts to dark mode */
             
             cursor: pointer;
             display: inline-block;
             box-shadow: 0 2px 4px rgba(0, 191, 255, 0.1);
             transition: background-color 0.3s ease;
+            letter-spacing: 1px; /* Added spacing for MUSE */
         }
-        
+
+        /* Style for the blue letter in the logo */
         .logo span.ampersand {
             color: var(--primary-color);
             font-weight: 900;
             margin: 0 1px;
         }
-
+        
         /* Menu Container */
         .header-actions {
             position: relative;
@@ -158,7 +161,7 @@
             background-color: var(--card-bg); /* Changed to card-bg for better dark mode control */
             border-bottom: 1px solid var(--border-color);
             margin-bottom: 10px;
-            padding-bottom: 10px;
+            padding-bottom: 0px; /* Reduced padding bottom for comment box */
             transition: background-color 0.3s ease;
         }
         
@@ -281,6 +284,53 @@
             color: var(--primary-color);
         }
         
+        /* --- COMMENTS STYLES --- */
+        .comments-list {
+            padding: 0 15px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        .comment-item {
+            margin-bottom: 4px;
+        }
+        .comment-user {
+            font-weight: 600;
+            margin-right: 5px;
+        }
+        
+        .comment-input-container {
+            border-top: 1px solid var(--border-color);
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+        .comment-input {
+            flex-grow: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+        .post-comment-btn {
+            color: var(--primary-color);
+            font-weight: 600;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            margin-left: 10px;
+            opacity: 0.5;
+            pointer-events: none;
+            font-size: 0.9rem;
+        }
+        .post-comment-btn.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
         .view-comments {
             color: var(--subtle-text);
             font-size: 0.85rem;
@@ -289,6 +339,99 @@
             margin-bottom: 10px;
         }
         
+        /* --- COMMENT MODAL STYLES --- */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Dimmed background */
+            backdrop-filter: blur(5px); /* Blurred background */
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-backdrop.open { display: flex; }
+
+        .comment-modal {
+            background-color: var(--card-bg);
+            width: 90%;
+            max-width: 450px;
+            max-height: 80vh;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: center;
+            position: relative;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+
+        .modal-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border-color);
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Comment Item Style in Modal */
+        .modal-comment-item {
+            display: flex;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        .modal-comment-avatar {
+            width: 32px; height: 32px; border-radius: 50%; margin-right: 10px;
+        }
+        .modal-comment-text span { font-weight: 600; margin-right: 5px; }
+        .modal-comment-text p { margin: 0; color: var(--text-color); }
+        .modal-comment-time { font-size: 0.75rem; color: var(--subtle-text); margin-top: 2px; }
+
+        /* Input in Modal */
+        .modal-input {
+            flex-grow: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+        .modal-post-btn {
+            color: var(--primary-color);
+            font-weight: 600;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0 0 0 10px;
+        }
+
         /* --- Footer Navigation (Mobile App Standard) --- */
         footer {
             background-color: var(--card-bg); /* Uses variable now */
@@ -340,7 +483,8 @@
 <body>
     
     <header>
-        <div class="logo">Art<span class="ampersand">&</span>Share</div>
+        <!-- NEW LOGO -->
+        <div class="logo">MU<span class="ampersand">S</span>E</div>
         
         <div class="header-actions">
             <div class="menu-trigger" onclick="toggleMenu()">
@@ -372,7 +516,8 @@
 
     <main>
         
-        <div class="art-post">
+        <!-- Post 1 -->
+        <div class="art-post" data-id="1">
             <div class="post-header">
                 <div class="user-info">
                     <img class="avatar" src="https://placehold.co/40x40/00bfff/ffffff?text=U" alt="User Avatar">
@@ -384,15 +529,14 @@
             <div class="post-image-container">
                 <div class="post-placeholder">
                     <div class="post-placeholder-inner">
-                        
+                        Canvas Area
                     </div>
                 </div>
             </div>
 
             <div class="post-actions">
                 <i class="far fa-heart post-like-btn" data-likes="0"></i>
-                <i class="far fa-comment"></i>
-                <i class="far fa-paper-plane"></i>
+                <i class="far fa-comment comment-trigger"></i>
                 <i class="far fa-bookmark last"></i>
             </div>
             
@@ -402,10 +546,17 @@
                 <span class="user-link">TheArtOfPainting</span> The sheer scale and detail of this Temple Art in Bhutan is breathtaking. <span class="hashtags">#TraditionalArt #Bhutan</span>
             </div>
             
-            <div class="view-comments">View all comments</div>
+            <div class="view-comments comment-trigger">View all 2 comments</div>
+            
+            <!-- Hidden Mock Data for Logic -->
+            <div class="hidden-comments hidden" style="display:none;">
+                <div class="mock-comment" data-user="ArtFan99" data-text="This is absolutely stunning!"></div>
+                <div class="mock-comment" data-user="Travel_Guru" data-text="I need to visit Bhutan soon."></div>
+            </div>
         </div>
         
-        <div class="art-post">
+        <!-- Post 2 -->
+        <div class="art-post" data-id="2">
             <div class="post-header">
                 <div class="user-info">
                     <img class="avatar" src="https://placehold.co/40x40/ff5722/ffffff?text=A" alt="User Avatar">
@@ -417,15 +568,14 @@
             <div class="post-image-container">
                 <div class="post-placeholder">
                     <div class="post-placeholder-inner">
-                        
+                        Abstract Canvas
                     </div>
                 </div>
             </div>
 
             <div class="post-actions">
                 <i class="far fa-heart post-like-btn" data-likes="0"></i>
-                <i class="far fa-comment"></i>
-                <i class="far fa-paper-plane"></i>
+                <i class="far fa-comment comment-trigger"></i>
                 <i class="far fa-bookmark last"></i>
             </div>
             
@@ -435,10 +585,15 @@
                 <span class="user-link">Abstract_Artist_X</span> Exploring ocean hues. <span class="hashtags">#OilPainting #AbstractArt</span>
             </div>
             
-            <div class="view-comments">View all comments</div>
+            <div class="view-comments comment-trigger">View all 1 comment</div>
+
+            <div class="hidden-comments hidden" style="display:none;">
+                <div class="mock-comment" data-user="Gallery_Owner" data-text="Love the texture on this one."></div>
+            </div>
         </div>
         
-        <div class="art-post">
+        <!-- Post 3 -->
+        <div class="art-post" data-id="3">
             <div class="post-header">
                 <div class="user-info">
                     <img class="avatar" src="https://placehold.co/40x40/333/fff?text=P" alt="User Avatar">
@@ -450,18 +605,14 @@
             <div class="post-image-container">
                 <div class="post-placeholder">
                     <div class="post-placeholder-inner">
-                        
-
-[Image of Charcoal Portrait Study]
-
+                        Charcoal Study
                     </div>
                 </div>
             </div>
 
             <div class="post-actions">
                 <i class="far fa-heart post-like-btn" data-likes="0"></i>
-                <i class="far fa-comment"></i>
-                <i class="far fa-paper-plane"></i>
+                <i class="far fa-comment comment-trigger"></i>
                 <i class="far fa-bookmark last"></i>
             </div>
             
@@ -471,24 +622,39 @@
                 <span class="user-link">ArtShala.com</span> Charcoal study. <span class="hashtags">#Charcoal #Portraiture</span>
             </div>
             
-            <div class="view-comments">View all comments</div>
+            <div class="view-comments comment-trigger">View all 3 comments</div>
+
+            <div class="hidden-comments hidden" style="display:none;">
+                <div class="mock-comment" data-user="Sketchy_Guy" data-text="That shading is incredible."></div>
+                <div class="mock-comment" data-user="PencilPro" data-text="What brand of charcoal?"></div>
+                <div class="mock-comment" data-user="NewbieArt" data-text="Teach me!"></div>
+            </div>
         </div>
 
     </main>
 
+    <!-- FLOATING COMMENT MODAL -->
+    <div class="modal-backdrop" id="commentModal">
+        <div class="comment-modal">
+            <div class="modal-header">
+                Comments
+                <i class="fas fa-times modal-close" onclick="closeCommentModal()"></i>
+            </div>
+            <div class="modal-body" id="modalCommentsList">
+                <!-- Comments injected here -->
+            </div>
+            <div class="modal-footer">
+                <input type="text" class="modal-input" id="modalCommentInput" placeholder="Add a comment as You...">
+                <button class="modal-post-btn" onclick="postCommentInModal()">Post</button>
+            </div>
+        </div>
+    </div>
+
     <footer>
-        <a href="index.html" class="footer-nav-item active">
-            <i class="fas fa-home"></i><span>Home</span>
-        </a>
-        <a href="Explore.html" class="footer-nav-item">
-            <i class="fas fa-compass"></i><span>Explore</span>
-        </a>
-        <a href="create.html" class="footer-nav-item">
-            <i class="fas fa-plus-square"></i><span>Create</span>
-        </a>
-        <a href="profile.html" class="footer-nav-item">
-            <i class="fas fa-user-circle"></i><span>Profile</span>
-        </a>
+        <a href="index.html" class="footer-nav-item active"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="explore.html" class="footer-nav-item"><i class="fas fa-compass"></i><span>Explore</span></a>
+        <a href="create.html" class="footer-nav-item"><i class="fas fa-plus-square"></i><span>Create</span></a>
+        <a href="profile.html" class="footer-nav-item"><i class="fas fa-user-circle"></i><span>Profile</span></a>
     </footer>
 
     <script>
@@ -498,7 +664,6 @@
             dropdown.classList.toggle('show');
         }
 
-        // Close dropdown when clicking outside
         window.onclick = function(event) {
             if (!event.target.closest('.header-actions')) {
                 const dropdowns = document.getElementsByClassName("dropdown-menu");
@@ -509,6 +674,10 @@
                     }
                 }
             }
+            // Close modal if clicking outside
+            if (event.target.classList.contains('modal-backdrop')) {
+                closeCommentModal();
+            }
         }
 
         // --- Dark Mode Logic ---
@@ -518,72 +687,133 @@
             const icon = document.getElementById('darkModeIcon');
             const text = document.getElementById('darkModeText');
 
-            // Function to enable dark mode
             const enableDarkMode = () => {
                 body.classList.add('dark-mode');
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-                text.textContent = "Light Mode";
+                if(icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
+                if(text) text.textContent = "Light Mode";
                 localStorage.setItem('darkMode', 'enabled');
             };
 
-            // Function to disable dark mode
             const disableDarkMode = () => {
                 body.classList.remove('dark-mode');
-                icon.classList.remove('fa-sun');
-                icon.classList.add('fa-moon');
-                text.textContent = "Dark Mode";
+                if(icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+                if(text) text.textContent = "Dark Mode";
                 localStorage.setItem('darkMode', 'disabled');
             };
 
-            // Check Local Storage on load
-            if (localStorage.getItem('darkMode') === 'enabled') {
-                enableDarkMode();
-            }
+            if (localStorage.getItem('darkMode') === 'enabled') { enableDarkMode(); }
 
-            // Click Event
-            if (darkModeToggle) {
+            if(darkModeToggle) {
                 darkModeToggle.addEventListener('click', (e) => {
-                    e.preventDefault(); // Prevent jumping to top
-                    if (body.classList.contains('dark-mode')) {
-                        disableDarkMode();
-                    } else {
-                        enableDarkMode();
-                    }
+                    e.preventDefault();
+                    if (body.classList.contains('dark-mode')) disableDarkMode(); else enableDarkMode();
                 });
             }
 
-            // --- Like functionality ---
-            const likeButtons = document.querySelectorAll('.post-like-btn');
+            // --- Comment Modal Logic ---
+            const commentTriggers = document.querySelectorAll('.comment-trigger');
+            const modal = document.getElementById('commentModal');
+            const modalList = document.getElementById('modalCommentsList');
+            let activePostId = null;
 
+            window.closeCommentModal = function() {
+                modal.classList.remove('open');
+            }
+
+            commentTriggers.forEach(trigger => {
+                trigger.addEventListener('click', () => {
+                    const post = trigger.closest('.art-post');
+                    activePostId = post.dataset.id;
+                    
+                    // Clear previous comments
+                    modalList.innerHTML = '';
+
+                    // Get Mock Data
+                    const mockComments = post.querySelectorAll('.mock-comment');
+                    
+                    // 1. Add Caption as first "comment"
+                    const avatarSrc = post.querySelector('.avatar').src;
+                    const username = post.querySelector('.username').textContent;
+                    const caption = post.querySelector('.post-caption').textContent.replace(username, '').trim();
+                    
+                    const captionHTML = `
+                        <div class="modal-comment-item">
+                            <img src="${avatarSrc}" class="modal-comment-avatar">
+                            <div class="modal-comment-text">
+                                <p><span>${username}</span> ${caption}</p>
+                                <div class="modal-comment-time">Now</div>
+                            </div>
+                        </div>
+                    `;
+                    modalList.innerHTML += captionHTML;
+
+                    // 2. Add Mock Comments
+                    mockComments.forEach(mock => {
+                        const mockUser = mock.dataset.user;
+                        const mockText = mock.dataset.text;
+                        const mockHTML = `
+                            <div class="modal-comment-item">
+                                <img src="https://placehold.co/32x32/eee/999?text=${mockUser.charAt(0)}" class="modal-comment-avatar">
+                                <div class="modal-comment-text">
+                                    <p><span>${mockUser}</span> ${mockText}</p>
+                                    <div class="modal-comment-time">2h ago</div>
+                                </div>
+                            </div>
+                        `;
+                        modalList.innerHTML += mockHTML;
+                    });
+
+                    modal.classList.add('open');
+                });
+            });
+
+            // Post new comment inside modal
+            window.postCommentInModal = function() {
+                const input = document.getElementById('modalCommentInput');
+                const text = input.value.trim();
+                if (text) {
+                    const username = localStorage.getItem('username') || 'You';
+                    const newHTML = `
+                        <div class="modal-comment-item">
+                            <img src="https://placehold.co/32x32/00bfff/fff?text=Y" class="modal-comment-avatar">
+                            <div class="modal-comment-text">
+                                <p><span>${username}</span> ${text}</p>
+                                <div class="modal-comment-time">Just now</div>
+                            </div>
+                        </div>
+                    `;
+                    modalList.innerHTML += newHTML;
+                    input.value = '';
+                    
+                    // Scroll to bottom
+                    modalList.scrollTop = modalList.scrollHeight;
+                }
+            }
+
+            // Post with Enter key
+            document.getElementById('modalCommentInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') postCommentInModal();
+            });
+
+            // Like Logic
+            const likeButtons = document.querySelectorAll('.post-like-btn');
             likeButtons.forEach(button => {
                 let likes = parseInt(button.getAttribute('data-likes'));
                 let isLiked = false;
                 const likesCountElement = button.closest('.art-post').querySelector('.likes-count');
-
                 const updateCount = () => {
-                    if (likes === 0) {
-                        likesCountElement.textContent = "No likes yet";
-                    } else if (likes === 1) {
-                        likesCountElement.textContent = "1 Like";
-                    } else {
-                        likesCountElement.textContent = `${likes} Likes`;
-                    }
+                    if (likes === 0) { likesCountElement.textContent = "No likes yet"; }
+                    else if (likes === 1) { likesCountElement.textContent = "1 Like"; }
+                    else { likesCountElement.textContent = `${likes} Likes`; }
                 };
-                
                 updateCount();
-
                 button.addEventListener('click', () => {
                     if (isLiked) {
-                        button.classList.remove('fas', 'liked');
-                        button.classList.add('far');
-                        likes--;
-                        isLiked = false;
+                        button.classList.remove('fas', 'liked'); button.classList.add('far');
+                        likes--; isLiked = false;
                     } else {
-                        button.classList.add('fas', 'liked');
-                        button.classList.remove('far');
-                        likes++;
-                        isLiked = true;
+                        button.classList.add('fas', 'liked'); button.classList.remove('far');
+                        likes++; isLiked = true;
                     }
                     updateCount();
                     button.setAttribute('data-likes', likes);

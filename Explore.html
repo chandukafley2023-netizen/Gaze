@@ -1,14 +1,14 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Art&Share - Explore</title>
+    <title>MUSE - Explore</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
     
     <style>
-        /* --- Root Variables and Reset --- */
+        /* --- Root Variables --- */
         :root {
             --primary-color: #00bfff;
             --secondary-color: #fff;
@@ -16,309 +16,223 @@
             --text-color: #222;
             --subtle-text: #666;
             --border-color: #e5e7eb;
-            --card-bg: #ffffff;       /* New variable for card/menu backgrounds */
-            --hover-bg: #f5f5f5;      /* New variable for hover states/placeholders */
+            --card-bg: #ffffff;
+            --hover-bg: #f5f5f5;
             --font-family: 'Inter', sans-serif;
             --max-width: 600px;
             --footer-height: 60px;
         }
 
-        /* --- Dark Mode Variables Override --- */
+        /* --- Dark Mode --- */
         body.dark-mode {
-            --secondary-color: #000000;   /* Main Background */
-            --card-bg: #121212;           /* Headers, Footers, Cards */
+            --secondary-color: #000000;
+            --card-bg: #121212;
             --text-color: #e0e0e0;
             --subtle-text: #a0a0a0;
             --border-color: #333333;
             --hover-bg: #1e1e1e;
         }
 
-        body { 
-            margin: 0; 
-            background-color: var(--secondary-color); 
-            font-family: var(--font-family); 
-            color: var(--text-color); 
-            padding-bottom: var(--footer-height);
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        /* --- HEADER Styles (From Home Page) --- */
-        header {
-            background-color: var(--card-bg);
-            border-bottom: 1px solid var(--border-color);
-            padding: 10px 15px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 50px;
-            transition: background-color 0.3s ease;
-        }
-
-        .logo { 
-            font-family: 'Inter', sans-serif;
-            font-weight: 800;
-            font-size: 1.5rem;
-            color: var(--text-color);
-            border: 2px solid var(--primary-color);
-            border-radius: 50px;
-            padding: 4px 15px;
-            background-color: var(--card-bg);
-            cursor: pointer;
-            display: inline-block;
-            box-shadow: 0 2px 4px rgba(0, 191, 255, 0.1);
-            transition: background-color 0.3s ease;
-        }
+        body { margin: 0; background-color: var(--secondary-color); font-family: var(--font-family); color: var(--text-color); padding-bottom: 60px; transition: background-color 0.3s ease, color 0.3s ease; }
         
-        .logo span.ampersand {
-            color: var(--primary-color);
-            font-weight: 900;
-            margin: 0 1px;
-        }
-
+        /* --- Header --- */
+        header { background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); padding: 10px 15px; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; height: 50px; transition: background-color 0.3s ease; }
+        .logo { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 1.5rem; color: var(--text-color); border: 2px solid var(--primary-color); border-radius: 50px; padding: 4px 20px; background-color: var(--card-bg); cursor: pointer; display: inline-block; box-shadow: 0 2px 4px rgba(0, 191, 255, 0.1); transition: background-color 0.3s ease; letter-spacing: 1px; }
+        .logo span.ampersand { color: var(--primary-color); font-weight: 900; margin: 0 1px; }
         .header-actions { position: relative; }
-        .menu-trigger {
-            font-size: 1.3rem;
-            color: var(--text-color);
-            cursor: pointer;
-            padding: 5px;
-        }
+        .menu-trigger { font-size: 1.3rem; color: var(--text-color); cursor: pointer; padding: 5px; }
 
-        /* Dropdown Menu */
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            top: 40px;
-            right: 0;
-            width: 200px;
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            border: 1px solid var(--border-color);
-            padding: 8px 0;
-            z-index: 2000;
-        }
-
+        /* --- Dropdown --- */
+        .dropdown-menu { display: none; position: absolute; top: 40px; right: 0; width: 200px; background-color: var(--card-bg); border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); border: 1px solid var(--border-color); padding: 8px 0; z-index: 2000; }
         .dropdown-menu.show { display: block; animation: fadeIn 0.2s ease; }
-
-        .dropdown-item {
-            padding: 10px 15px;
-            display: flex;
-            align-items: center;
-            color: var(--text-color);
-            text-decoration: none;
-            transition: background 0.2s;
-            font-size: 0.95rem;
-        }
-
+        .dropdown-item { padding: 10px 15px; display: flex; align-items: center; color: var(--text-color); text-decoration: none; transition: background 0.2s; font-size: 0.95rem; cursor: pointer; }
         .dropdown-item:hover { background-color: var(--hover-bg); }
         .dropdown-item i { width: 25px; color: var(--subtle-text); font-size: 1.1rem; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* --- Search --- */
+        .search-bar-container { padding: 10px 15px; max-width: var(--max-width); margin: 0 auto; position: sticky; top: 50px; z-index: 900; background-color: var(--card-bg); transition: background-color 0.3s ease; }
+        .search-bar { width: 100%; padding: 12px 20px; border: 1px solid var(--border-color); background: var(--hover-bg); border-radius: 30px; font-size: 0.95rem; outline: none; box-sizing: border-box; color: var(--text-color); transition: border-color 0.3s; }
+        .search-bar:focus { border-color: var(--primary-color); }
         
-        /* --- EXPLORE SPECIFIC STYLES --- */
-        
-        /* Sticky Search Bar Container */
-        .search-bar-container { 
-            padding: 10px 15px; 
-            max-width: var(--max-width); 
-            margin: 0 auto;
-            position: sticky;
-            top: 50px; /* Below the 50px header */
-            z-index: 900;
-            background-color: var(--card-bg); /* Adapts to dark mode */
-            opacity: 0.98;
-            transition: background-color 0.3s ease;
-        }
-        
-        /* Rounder Search Bar */
-        .search-bar { 
-            width: 100%; 
-            padding: 12px 20px; 
-            border: none; 
-            background: var(--hover-bg); /* Light gray in light mode, dark gray in dark mode */
-            border-radius: 30px;
-            font-size: 0.95rem; 
-            outline: none; 
-            box-sizing: border-box; 
-            color: var(--text-color);
-        }
-        
-        .explore-grid { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 5px; 
-            max-width: var(--max-width); 
-            margin: 0 auto; 
-            padding: 5px; 
-        }
-        
-        /* Rounder Grid Items */
-        .explore-item { 
-            aspect-ratio: 1/1; 
-            position: relative; 
-            background: var(--hover-bg); /* Adapts placeholder color */
-            border-radius: 12px; 
-            overflow: hidden; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
-        }
-        .explore-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        /* --- Grid --- */
+        .explore-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; max-width: var(--max-width); margin: 0 auto; padding: 5px; }
+        .explore-item { aspect-ratio: 1/1; position: relative; background: var(--hover-bg); border-radius: 4px; overflow: hidden; cursor: pointer; }
+        .explore-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
+        .explore-item:hover img { transform: scale(1.05); }
 
-        /* Footer */
-        footer { 
-            background-color: var(--card-bg); 
-            border-top: 1px solid var(--border-color); 
-            height: var(--footer-height); 
-            position: fixed; 
-            bottom: 0; left: 0; right: 0; 
-            display: flex; 
-            justify-content: space-around; 
-            align-items: center; 
-            z-index: 1000; 
-            transition: background-color 0.3s ease;
-        }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--subtle-text); text-decoration: none; width: 25%; }
-        .nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
-        .nav-item span { font-size: 0.7rem; font-weight: 500; }
-        .nav-item.active { color: var(--primary-color); }
+        /* --- Footer --- */
+        footer { background-color: var(--card-bg); border-top: 1px solid var(--border-color); height: 60px; position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000; display: flex; justify-content: space-around; align-items: center; transition: background-color 0.3s ease; }
+        .footer-nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--subtle-text); width: 25%; }
+        .footer-nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
+        .footer-nav-item span { font-size: 0.7rem; font-weight: 500; }
+        .footer-nav-item.active { color: var(--primary-color); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <!-- Header (Copied from Home Page) -->
     <header>
-        <div class="logo">Art<span class="ampersand">&</span>Share</div>
+        <div class="logo">MU<span class="ampersand">S</span>E</div>
         <div class="header-actions">
-            <div class="menu-trigger" onclick="toggleMenu()">
-                <i class="fas fa-bars"></i>
-            </div>
-            
-            <!-- Dropdown Content -->
+            <div class="menu-trigger" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
             <div class="dropdown-menu" id="exploreDropdown">
-                <a href="#" class="dropdown-item">
-                    <i class="fas fa-cog"></i> Settings
-                </a>
-                <a href="#" class="dropdown-item">
-                    <i class="far fa-bookmark"></i> Saved
-                </a>
-                <a href="#" class="dropdown-item">
-                    <i class="fas fa-chart-bar"></i> Your Activity
-                </a>
-                
-                <!-- Dark Mode Toggle Item -->
-                <a href="#" class="dropdown-item" id="darkModeToggle">
-                    <i class="far fa-moon" id="darkModeIcon"></i> <span id="darkModeText">Dark Mode</span>
-                </a>
-                
+                <a href="#" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a>
+                <a href="#" class="dropdown-item"><i class="far fa-bookmark"></i> Saved</a>
+                <a href="#" class="dropdown-item" id="darkModeToggle"><i class="far fa-moon" id="darkModeIcon"></i> <span id="darkModeText">Dark Mode</span></a>
                 <div style="border-top: 1px solid var(--border-color); margin: 5px 0;"></div>
-                <a href="#" class="dropdown-item" style="color: #ff5722;">
-                    <i class="fas fa-sign-out-alt" style="color: #ff5722;"></i> Log Out
-                </a>
+                <a href="#" class="dropdown-item" id="authLink" style="color: var(--primary-color);"><i class="fas fa-sign-in-alt"></i> Log In</a>
             </div>
         </div>
     </header>
 
     <div class="search-bar-container">
-        <input type="text" class="search-bar" placeholder="Search artists, styles, tags...">
+        <input type="text" class="search-bar" id="searchInput" placeholder="Search artists (e.g. ArtMaster)...">
     </div>
 
-    <div class="explore-grid">
-        <div class="explore-item"><img src="https://placehold.co/200x200/1abc9c/fff?text=Art1"></div>
-        <div class="explore-item"><img src="https://placehold.co/200x200/2ecc71/fff?text=Art2"></div>
-        <div class="explore-item"><img src="https://placehold.co/200x200/3498db/fff?text=Art3"></div>
-        <div class="explore-item"><img src="https://placehold.co/200x200/9b59b6/fff?text=Art4"></div>
-        <div class="explore-item"><img src="https://placehold.co/200x200/34495e/fff?text=Art5"></div>
-        <div class="explore-item"><img src="https://placehold.co/200x200/f1c40f/fff?text=Art6"></div>
-        <div class="explore-item"><img src="https://placehold.co/200x200/e67e22/fff?text=Art7"></div>
-        <div class="explore-item"><img src="https://placehold.co/200x200/e74c3c/fff?text=Art8"></div>
-        <div class="explore-item"><img src="https://placehold.co/200x200/ecf0f1/333?text=Art9"></div>
+    <div class="explore-grid" id="exploreGrid">
+        <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #666;">Loading art...</div>
     </div>
 
     <footer>
-        <a href="index.html" class="nav-item">
-            <i class="fas fa-home"></i><span>Home</span>
-        </a>
-        <a href="explore.html" class="nav-item active">
-            <i class="fas fa-compass"></i><span>Explore</span>
-        </a>
-        <a href="create.html" class="nav-item">
-            <i class="fas fa-plus-square"></i><span>Create</span>
-        </a>
-        <a href="profile.html" class="nav-item">
-            <i class="fas fa-user-circle"></i><span>Profile</span>
-        </a>
+        <a href="index.html" class="footer-nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="explore.html" class="footer-nav-item active"><i class="fas fa-compass"></i><span>Explore</span></a>
+        <a href="create.html" class="footer-nav-item"><i class="fas fa-plus-square"></i><span>Create</span></a>
+        <a href="profile.html" class="footer-nav-item"><i class="fas fa-user-circle"></i><span>Profile</span></a>
     </footer>
 
-    <script>
-        // Toggle Dropdown Menu
-        function toggleMenu() {
-            const dropdown = document.getElementById('exploreDropdown');
-            dropdown.classList.toggle('show');
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // 1. YOUR FIREBASE KEYS
+        const firebaseConfig = {
+            apiKey: "AIzaSyBxqgmslZINTLdqF1LfC46eTMQMFyYFRr4",
+            authDomain: "artandshare-175b3.firebaseapp.com",
+            projectId: "artandshare-175b3",
+            storageBucket: "artandshare-175b3.firebasestorage.app",
+            messagingSenderId: "369391496856",
+            appId: "1:369391496856:web:da89ff9f8aaef36907aaed",
+            measurementId: "G-6PNY1VTYFX"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        let currentUser = null;
+        let allPosts = []; // Store all posts here to filter locally
+
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            updateAuthUI();
+            loadAllPosts(); // Load posts regardless of login
+        });
+
+        function updateAuthUI() {
+            const authLink = document.getElementById('authLink');
+            if (currentUser) {
+                authLink.innerHTML = '<i class="fas fa-sign-out-alt"></i> Log Out';
+                authLink.style.color = '#ff5722';
+                authLink.onclick = () => { signOut(auth).then(() => window.location.reload()); };
+                authLink.removeAttribute('href');
+            } else {
+                authLink.innerHTML = '<i class="fas fa-sign-in-alt"></i> Log In';
+                authLink.style.color = '#00bfff';
+                authLink.href = 'login.html';
+                authLink.onclick = null;
+            }
         }
 
-        // Close dropdown when clicking outside
+        // --- Load Posts Logic ---
+        async function loadAllPosts() {
+            const grid = document.getElementById('exploreGrid');
+            try {
+                const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                allPosts = []; // Reset list
+                grid.innerHTML = "";
+
+                if (querySnapshot.empty) {
+                    grid.innerHTML = "<div style='grid-column:1/-1; text-align:center; padding:20px;'>No art shared yet.</div>";
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const post = doc.data();
+                    allPosts.push(post); // Save for searching
+                    
+                    // Create Grid Item
+                    const div = document.createElement('div');
+                    div.className = 'explore-item';
+                    // Add a title tooltip for hover
+                    div.title = `By: ${post.username}`;
+                    div.innerHTML = `<img src="${post.image}" alt="Art by ${post.username}">`;
+                    
+                    // Simple click interaction (Can expand to show modal like home page)
+                    div.onclick = () => alert(`Artist: ${post.username}\nCaption: ${post.caption}`);
+                    
+                    grid.appendChild(div);
+                });
+
+            } catch (error) {
+                console.error("Error loading:", error);
+                grid.innerHTML = "<div style='grid-column:1/-1; text-align:center; padding:20px;'>Offline mode or Error.</div>";
+            }
+        }
+
+        // --- Search Logic ---
+        const searchInput = document.getElementById('searchInput');
+        
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            const grid = document.getElementById('exploreGrid');
+            
+            grid.innerHTML = ""; // Clear current view
+
+            // Filter posts based on username
+            const filteredPosts = allPosts.filter(post => 
+                post.username && post.username.toLowerCase().includes(searchTerm)
+            );
+
+            if (filteredPosts.length === 0) {
+                grid.innerHTML = `<div style='grid-column:1/-1; text-align:center; padding:20px;'>No artists found matching "${searchTerm}"</div>`;
+                return;
+            }
+
+            // Display filtered results
+            filteredPosts.forEach(post => {
+                const div = document.createElement('div');
+                div.className = 'explore-item';
+                div.title = `By: ${post.username}`;
+                div.innerHTML = `<img src="${post.image}" alt="Art by ${post.username}">`;
+                div.onclick = () => alert(`Artist: ${post.username}\nCaption: ${post.caption}`);
+                grid.appendChild(div);
+            });
+        });
+
+        // Menu & Theme Logic
+        window.toggleMenu = function() { document.getElementById('exploreDropdown').classList.toggle('show'); }
         window.onclick = function(event) {
             if (!event.target.closest('.header-actions')) {
-                const dropdowns = document.getElementsByClassName("dropdown-menu");
-                for (let i = 0; i < dropdowns.length; i++) {
-                    const openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
-                }
+                const dropdown = document.getElementById('exploreDropdown');
+                if (dropdown.classList.contains('show')) dropdown.classList.remove('show');
             }
         }
 
-        // --- Dark Mode Logic (Same as Home Page) ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const darkModeToggle = document.getElementById('darkModeToggle');
-            const body = document.body;
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        if (localStorage.getItem('darkMode') === 'enabled') document.body.classList.add('dark-mode');
+        darkModeToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
             const icon = document.getElementById('darkModeIcon');
             const text = document.getElementById('darkModeText');
-
-            // Function to enable dark mode
-            const enableDarkMode = () => {
-                body.classList.add('dark-mode');
-                if(icon) {
-                    icon.classList.remove('fa-moon');
-                    icon.classList.add('fa-sun');
-                }
-                if(text) text.textContent = "Light Mode";
-                localStorage.setItem('darkMode', 'enabled');
-            };
-
-            // Function to disable dark mode
-            const disableDarkMode = () => {
-                body.classList.remove('dark-mode');
-                if(icon) {
-                    icon.classList.remove('fa-sun');
-                    icon.classList.add('fa-moon');
-                }
-                if(text) text.textContent = "Dark Mode";
-                localStorage.setItem('darkMode', 'disabled');
-            };
-
-            // Check Local Storage on load to persist state from Home Page
-            if (localStorage.getItem('darkMode') === 'enabled') {
-                enableDarkMode();
-            }
-
-            // Click Event
-            if (darkModeToggle) {
-                darkModeToggle.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    if (body.classList.contains('dark-mode')) {
-                        disableDarkMode();
-                    } else {
-                        enableDarkMode();
-                    }
-                });
-            }
+            if(icon) { icon.className = isDark ? 'far fa-sun' : 'far fa-moon'; }
+            if(text) text.textContent = isDark ? "Light Mode" : "Dark Mode";
         });
     </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Art&Share - Profile</title>
+    <title>MUSE - Profile</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
     
@@ -226,6 +226,7 @@
             position: relative;
             cursor: pointer;
         }
+        .explore-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
         /* --- EDIT VIEW --- */
         .edit-container {
@@ -352,7 +353,7 @@
 
             <footer>
                 <a href="index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
-                <a href="explore.html" class="nav-item"><i class="fas fa-compass"></i><span>Explore</span></a>
+                <a href="Explore.html" class="nav-item"><i class="fas fa-compass"></i><span>Explore</span></a>
                 <a href="create.html" class="nav-item"><i class="fas fa-plus-square"></i><span>Create</span></a>
                 <a href="profile.html" class="nav-item active"><i class="fas fa-user-circle"></i><span>Profile</span></a>
             </footer>
@@ -443,13 +444,13 @@
 
         // 1. YOUR REAL FIREBASE KEYS
         const firebaseConfig = {
-          apiKey: "AIzaSyBxqgmslZINTLdqF1LfC46eTMQMFyYFRr4",
-          authDomain: "artandshare-175b3.firebaseapp.com",
-          projectId: "artandshare-175b3",
-          storageBucket: "artandshare-175b3.firebasestorage.app",
-          messagingSenderId: "369391496856",
-          appId: "1:369391496856:web:da89ff9f8aaef36907aaed",
-          measurementId: "G-6PNY1VTYFX"
+            apiKey: "AIzaSyBxqgmslZINTLdqF1LfC46eTMQMFyYFRr4",
+            authDomain: "artandshare-175b3.firebaseapp.com",
+            projectId: "artandshare-175b3",
+            storageBucket: "artandshare-175b3.firebasestorage.app",
+            messagingSenderId: "369391496856",
+            appId: "1:369391496856:web:da89ff9f8aaef36907aaed",
+            measurementId: "G-6PNY1VTYFX"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -552,19 +553,15 @@
             grid.innerHTML = '<div style="text-align:center; grid-column:1/-1; padding:20px;">Loading...</div>';
             
             try {
-                const q = query(collection(db, "posts"), where("userId", "==", userId), orderBy("createdAt", "desc"));
+                // REMOVED ORDERBY TO FIX INDEX ERROR
+                const q = query(collection(db, "posts"), where("userId", "==", userId));
                 const querySnapshot = await getDocs(q);
                 
                 grid.innerHTML = "";
                 postCount.textContent = querySnapshot.size;
 
                 if(querySnapshot.empty) {
-                    // Show placeholder blocks if no posts
-                    for(let i=0; i<6; i++) {
-                         const div = document.createElement('div');
-                         div.className = 'explore-item';
-                         grid.appendChild(div);
-                    }
+                    grid.innerHTML = '<div style="text-align:center; grid-column:1/-1; padding:20px;">No posts yet.</div>';
                     return;
                 }
 
@@ -578,7 +575,7 @@
                 });
             } catch (e) {
                 console.error("Error loading profile posts:", e);
-                grid.innerHTML = ""; // Clear loader
+                grid.innerHTML = '<div style="text-align:center; grid-column:1/-1;">Error loading posts.</div>';
             }
         }
 

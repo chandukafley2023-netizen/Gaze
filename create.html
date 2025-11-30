@@ -190,23 +190,40 @@
         .upload-box.has-image .upload-instructions { display: none; }
         .upload-box.has-image .preview-image { display: block; }
         
-        .caption-input { 
-            width: 100%; padding: 15px; border: 1px solid var(--border-color); 
-            border-radius: 8px; margin-bottom: 15px; font-family: inherit; 
-            resize: none; box-sizing: border-box; background-color: var(--card-bg);
-            color: var(--text-color); outline: none;
+        .input-group {
+            width: 100%;
+            margin-bottom: 15px;
+            text-align: left;
         }
-        .caption-input:focus { border-color: var(--primary-color); }
+
+        .input-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--subtle-text);
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .caption-input, .select-input { 
+            width: 100%; padding: 15px; border: 1px solid var(--border-color); 
+            border-radius: 8px; font-family: inherit; 
+            box-sizing: border-box; background-color: var(--card-bg);
+            color: var(--text-color); outline: none;
+            font-size: 0.95rem;
+        }
+        .caption-input { resize: none; }
+        .caption-input:focus, .select-input:focus { border-color: var(--primary-color); }
 
         /* --- TOGGLE SWITCH STYLES --- */
         .sale-option {
-            display: flex;
+            display: none; /* Hidden by default */
             align-items: center;
             justify-content: space-between;
             width: 100%;
             margin-bottom: 15px;
             padding: 0 5px;
             box-sizing: border-box;
+            animation: fadeIn 0.2s ease;
         }
         
         .sale-label { font-weight: 600; font-size: 0.95rem; }
@@ -278,8 +295,9 @@
         .share-btn { 
             background: var(--primary-color); color: white; border: none; 
             padding: 15px; border-radius: 8px; font-weight: 700; width: 100%; 
-            font-size: 1rem; cursor: pointer; 
+            font-size: 1rem; cursor: pointer; margin-top: 10px;
         }
+        .share-btn:disabled { background-color: #ccc; cursor: not-allowed; }
 
         /* --- FOOTER --- */
         footer { 
@@ -339,8 +357,20 @@
 
             <textarea class="caption-input" id="captionInput" rows="3" placeholder="Write a caption..."></textarea>
             
-            <!-- Sell Option Toggle -->
-            <div class="sale-option">
+            <!-- Art Type Selection -->
+            <div class="input-group">
+                <label class="input-label">Type of Art</label>
+                <select id="artTypeSelect" class="select-input">
+                    <option value="Digital">Digital Art</option>
+                    <option value="Painting">Painting</option>
+                    <option value="Sculpture">Sculpture</option>
+                    <option value="Drawing">Drawing</option>
+                    <option value="Physical">Other Physical Art</option>
+                </select>
+            </div>
+
+            <!-- Sell Option Toggle (Hidden for Digital) -->
+            <div class="sale-option" id="saleOptionContainer">
                 <span class="sale-label">List for Sale?</span>
                 <label class="switch">
                     <input type="checkbox" id="saleToggle">
@@ -372,13 +402,13 @@
 
         // 1. YOUR REAL FIREBASE KEYS
         const firebaseConfig = {
-          apiKey: "AIzaSyBxqgmslZINTLdqF1LfC46eTMQMFyYFRr4",
-          authDomain: "artandshare-175b3.firebaseapp.com",
-          projectId: "artandshare-175b3",
-          storageBucket: "artandshare-175b3.firebasestorage.app",
-          messagingSenderId: "369391496856",
-          appId: "1:369391496856:web:da89ff9f8aaef36907aaed",
-          measurementId: "G-6PNY1VTYFX"
+            apiKey: "AIzaSyBxqgmslZINTLdqF1LfC46eTMQMFyYFRr4",
+            authDomain: "artandshare-175b3.firebaseapp.com",
+            projectId: "artandshare-175b3",
+            storageBucket: "artandshare-175b3.firebasestorage.app",
+            messagingSenderId: "369391496856",
+            appId: "1:369391496856:web:da89ff9f8aaef36907aaed",
+            measurementId: "G-6PNY1VTYFX"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -413,30 +443,74 @@
         const saleToggle = document.getElementById('saleToggle');
         const priceContainer = document.getElementById('priceContainer');
         const priceInput = document.getElementById('priceInput');
+        const artTypeSelect = document.getElementById('artTypeSelect');
+        const saleOptionContainer = document.getElementById('saleOptionContainer');
 
-        // --- 1. Handle File Selection ---
+        // --- 1. Handle File Selection (WITH COMPRESSION) ---
+        function resizeImage(file, maxWidth, maxHeight, quality, callback) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    let width = img.width;
+                    let height = img.height;
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height *= maxWidth / width;
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width *= maxHeight / height;
+                            height = maxHeight;
+                        }
+                    }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    callback(canvas.toDataURL('image/jpeg', quality));
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
         if (fileInput) {
             fileInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) {
-                    // Simple check for size (2MB limit for base64 in Firestore)
                     if(file.size > 2 * 1024 * 1024) {
                         alert("Image too large (Max 2MB). Please pick a smaller image.");
                         return;
                     }
-                    
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        currentImageData = event.target.result; // Base64 string
+                    resizeImage(file, 800, 800, 0.7, function(resizedDataUrl) {
+                        currentImageData = resizedDataUrl; 
                         imagePreview.src = currentImageData;
                         uploadBox.classList.add('has-image'); 
-                    }
-                    reader.readAsDataURL(file);
+                    });
                 }
             });
         }
 
-        // --- 2. Handle Sale Toggle ---
+        // --- 2. Handle Art Type & Sale Toggle ---
+        function checkSellability() {
+            const type = artTypeSelect.value;
+            // Allow sale only for physical types
+            if (type === 'Painting' || type === 'Sculpture' || type === 'Physical' || type === 'Drawing') {
+                saleOptionContainer.style.display = 'flex';
+            } else {
+                saleOptionContainer.style.display = 'none';
+                saleToggle.checked = false;
+                priceContainer.classList.remove('show');
+            }
+        }
+
+        artTypeSelect.addEventListener('change', checkSellability);
+        // Init check
+        checkSellability();
+
         if (saleToggle) {
             saleToggle.addEventListener('change', function() {
                 if(this.checked) {
@@ -467,12 +541,12 @@
             btn.disabled = true;
 
             try {
-                // Add a new document in collection "posts"
                 await addDoc(collection(db, "posts"), {
                     userId: currentUser.uid,
-                    username: currentUser.displayName || currentUser.email.split('@')[0], // Fallback to email prefix
-                    image: currentImageData,
+                    username: currentUser.displayName || currentUser.email.split('@')[0], 
+                    image: currentImageData, 
                     caption: captionInput.value,
+                    artType: artTypeSelect.value,
                     forSale: isForSale,
                     price: priceValue,
                     likes: 0,
@@ -480,7 +554,7 @@
                 });
                 
                 alert("Posted successfully!");
-                window.location.href = 'index.html'; // Go to feed
+                window.location.href = 'index.html'; 
                 
             } catch (e) {
                 console.error("Error adding document: ", e);
@@ -507,7 +581,7 @@
 
         window.logout = function() {
             signOut(auth).then(() => {
-                window.location.reload(); // Will trigger onAuthStateChanged -> guest view
+                window.location.reload(); 
             });
         }
 

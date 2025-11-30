@@ -18,9 +18,37 @@
         .input-group { margin-bottom: 15px; text-align: left; }
         .input-field { width: 100%; padding: 14px; border: 1px solid var(--border-color); background-color: var(--input-bg); border-radius: 8px; font-size: 0.95rem; color: var(--text-color); box-sizing: border-box; outline: none; }
         .input-field:focus { border-color: var(--primary-color); }
-        .btn-primary { width: 100%; padding: 14px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; margin-top: 10px; }
+        
+        /* Updated Button Styles with Animation */
+        .btn-primary { 
+            width: 100%; 
+            padding: 14px; 
+            background-color: var(--primary-color); 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: 600; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            margin-top: 10px; 
+            transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease; 
+        }
+        
+        .btn-primary:hover { 
+            background-color: #009acd; /* Slightly darker blue */
+            transform: translateY(-2px); /* Moves up slightly */
+            box-shadow: 0 4px 12px rgba(0, 191, 255, 0.3); /* Adds a glow/shadow */
+        }
+
+        .btn-primary:active {
+            transform: translateY(0); /* Press effect */
+            box-shadow: 0 2px 5px rgba(0, 191, 255, 0.2);
+        }
+
         .auth-switch { margin-top: 20px; font-size: 0.9rem; color: var(--subtle-text); }
-        .link { color: var(--primary-color); font-weight: 600; cursor: pointer; }
+        .link { color: var(--primary-color); font-weight: 600; cursor: pointer; transition: color 0.2s; }
+        .link:hover { text-decoration: underline; color: #009acd; }
+        
         .hidden { display: none; }
         .error-msg { color: #ff5722; font-size: 0.85rem; margin-top: 10px; display: none; }
         .success-msg { color: #4caf50; font-size: 0.85rem; margin-top: 10px; display: none; }
@@ -40,10 +68,12 @@
             <div class="error-msg" id="login-error"></div>
             
             <div style="margin-top: 15px;">
-                <span class="link" style="font-size: 0.85rem;" onclick="switchView('forgot-form')">Forgot Password?</span>
+                <!-- ID added here, onclick removed -->
+                <span class="link" id="link-forgot" style="font-size: 0.85rem;">Forgot Password?</span>
             </div>
 
-            <div class="auth-switch">Don't have an account? <span class="link" onclick="switchView('signup-form')">Sign up</span></div>
+            <!-- ID added here, onclick removed -->
+            <div class="auth-switch">Don't have an account? <span class="link" id="link-signup">Sign up</span></div>
         </div>
 
         <!-- SIGN UP FORM -->
@@ -53,7 +83,8 @@
             <div class="input-group"><input type="password" id="signup-pass" class="input-field" placeholder="Password (Min 6 chars)"></div>
             <button class="btn-primary" id="btn-signup">Sign Up</button>
             <div class="error-msg" id="signup-error"></div>
-            <div class="auth-switch">Have an account? <span class="link" onclick="switchView('login-form')">Log in</span></div>
+            <!-- ID added here, onclick removed -->
+            <div class="auth-switch">Have an account? <span class="link" id="link-login">Log in</span></div>
         </div>
 
         <!-- FORGOT PASSWORD FORM -->
@@ -64,7 +95,8 @@
             <button class="btn-primary" id="btn-reset">Send Reset Link</button>
             <div class="error-msg" id="reset-error"></div>
             <div class="success-msg" id="reset-success">Check your email for the link!</div>
-            <div class="auth-switch"><span class="link" onclick="switchView('login-form')">Back to Log In</span></div>
+            <!-- ID added here, onclick removed -->
+            <div class="auth-switch"><span class="link" id="link-back">Back to Log In</span></div>
         </div>
     </div>
 
@@ -90,8 +122,8 @@
             if (user) window.location.href = 'index.html';
         });
 
-        // UI Logic to switch views
-        window.switchView = (viewId) => {
+        // UI Logic to switch views (Defined locally)
+        const switchView = (viewId) => {
             // Hide all forms
             document.getElementById('login-form').classList.add('hidden');
             document.getElementById('signup-form').classList.add('hidden');
@@ -104,6 +136,12 @@
             // Show requested form
             document.getElementById(viewId).classList.remove('hidden');
         };
+
+        // Attach Event Listeners (Safely handles module scoping)
+        document.getElementById('link-forgot').addEventListener('click', () => switchView('forgot-form'));
+        document.getElementById('link-signup').addEventListener('click', () => switchView('signup-form'));
+        document.getElementById('link-login').addEventListener('click', () => switchView('login-form'));
+        document.getElementById('link-back').addEventListener('click', () => switchView('login-form'));
 
         // Sign Up
         document.getElementById('btn-signup').addEventListener('click', async () => {

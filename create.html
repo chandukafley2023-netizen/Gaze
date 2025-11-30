@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Art&Share - Create</title>
+    <title>MUSE - Create</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
     
@@ -60,6 +60,10 @@
             background-color: var(--card-bg);
             width: 100%;
             box-sizing: border-box;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 2000;
         }
         .guest-icon { font-size: 4rem; color: var(--subtle-text); margin-bottom: 20px; }
         .guest-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 10px; }
@@ -303,7 +307,7 @@
     <!-- === AUTHENTICATED CONTENT (Wrapped) === -->
     <div id="auth-content">
         <header>
-            <div class="logo">Art<span class="ampersand">&</span>Share</div>
+            <div class="logo">MU<span class="ampersand">S</span>E</div>
             <div class="header-actions">
                 <div class="menu-trigger" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
                 <div class="dropdown-menu" id="createDropdown">
@@ -322,10 +326,14 @@
 
             <!-- Clickable Box -->
             <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
+                
+                <!-- Default View -->
                 <div class="upload-instructions">
                     <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; margin-bottom: 10px;"></i>
                     <p>Tap here to select art from device</p>
                 </div>
+
+                <!-- Preview View -->
                 <img id="imagePreview" class="preview-image" src="#" alt="Preview">
             </div>
 
@@ -346,7 +354,7 @@
                 <input type="number" class="price-input" id="priceInput" placeholder="Price (e.g. 50)">
             </div>
 
-            <button class="share-btn" onclick="publishPost()">Post Art</button>
+            <button class="share-btn" id="postBtn">Post Art</button>
         </div>
 
         <footer>
@@ -357,20 +365,45 @@
         </footer>
     </div>
 
-    <script>
-        // --- Access Control Logic ---
-        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-        const authContent = document.getElementById('auth-content');
-        const guestView = document.getElementById('guest-view');
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Toggle logic: If logged in, show content. If not, show guest screen.
-        if (isLoggedIn) {
-            authContent.style.display = 'flex'; // Use flex to maintain layout
-            guestView.classList.add('hidden');
-        } else {
-            authContent.classList.add('hidden');
-            guestView.classList.remove('hidden');
-        }
+        // 1. YOUR REAL FIREBASE KEYS
+        const firebaseConfig = {
+          apiKey: "AIzaSyBxqgmslZINTLdqF1LfC46eTMQMFyYFRr4",
+          authDomain: "artandshare-175b3.firebaseapp.com",
+          projectId: "artandshare-175b3",
+          storageBucket: "artandshare-175b3.firebasestorage.app",
+          messagingSenderId: "369391496856",
+          appId: "1:369391496856:web:da89ff9f8aaef36907aaed",
+          measurementId: "G-6PNY1VTYFX"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let currentImageData = null;
+
+        const guestView = document.getElementById('guest-view');
+        const authContent = document.getElementById('auth-content');
+
+        // --- Check Login Status ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Logged in: Show content
+                currentUser = user;
+                guestView.classList.add('hidden');
+                authContent.style.display = 'flex'; 
+            } else {
+                // Not logged in: Show guest screen
+                authContent.style.display = 'none';
+                guestView.classList.remove('hidden');
+            }
+        });
 
         // --- Variables ---
         const fileInput = document.getElementById('fileInput');
@@ -380,16 +413,21 @@
         const saleToggle = document.getElementById('saleToggle');
         const priceContainer = document.getElementById('priceContainer');
         const priceInput = document.getElementById('priceInput');
-        let currentImageData = null;
 
         // --- 1. Handle File Selection ---
         if (fileInput) {
             fileInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) {
+                    // Simple check for size (2MB limit for base64 in Firestore)
+                    if(file.size > 2 * 1024 * 1024) {
+                        alert("Image too large (Max 2MB). Please pick a smaller image.");
+                        return;
+                    }
+                    
                     const reader = new FileReader();
                     reader.onload = function(event) {
-                        currentImageData = event.target.result;
+                        currentImageData = event.target.result; // Base64 string
                         imagePreview.src = currentImageData;
                         uploadBox.classList.add('has-image'); 
                     }
@@ -409,8 +447,8 @@
             });
         }
 
-        // --- 3. Handle Publishing ---
-        function publishPost() {
+        // --- 3. Handle Publishing to Cloud ---
+        document.getElementById('postBtn').addEventListener('click', async () => {
             if (!currentImageData) {
                 alert("Please select an image first.");
                 return;
@@ -423,30 +461,37 @@
                 alert("Please enter a price.");
                 return;
             }
+            
+            const btn = document.getElementById('postBtn');
+            btn.textContent = "Posting...";
+            btn.disabled = true;
 
-            const newPost = {
-                id: Date.now(),
-                image: currentImageData,
-                caption: captionInput.value,
-                username: localStorage.getItem('username') || "My Art Gallery",
-                userAvatar: "https://placehold.co/40x40/00bfff/ffffff?text=Me",
-                timestamp: new Date().toLocaleDateString(),
-                forSale: isForSale,
-                price: priceValue
-            };
-
-            let posts = JSON.parse(localStorage.getItem('artSharePosts')) || [];
-            posts.unshift(newPost);
-            localStorage.setItem('artSharePosts', JSON.stringify(posts));
-
-            let postCount = parseInt(localStorage.getItem('postCount') || '1');
-            localStorage.setItem('postCount', postCount + 1);
-
-            window.location.href = 'index.html';
-        }
+            try {
+                // Add a new document in collection "posts"
+                await addDoc(collection(db, "posts"), {
+                    userId: currentUser.uid,
+                    username: currentUser.displayName || currentUser.email.split('@')[0], // Fallback to email prefix
+                    image: currentImageData,
+                    caption: captionInput.value,
+                    forSale: isForSale,
+                    price: priceValue,
+                    likes: 0,
+                    createdAt: serverTimestamp()
+                });
+                
+                alert("Posted successfully!");
+                window.location.href = 'index.html'; // Go to feed
+                
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                alert("Error posting. Try a smaller image.");
+                btn.textContent = "Post Art";
+                btn.disabled = false;
+            }
+        });
 
         // --- Menu & Dark Mode Logic ---
-        function toggleMenu() { 
+        window.toggleMenu = function() { 
             const dropdown = document.getElementById('createDropdown');
             if(dropdown) dropdown.classList.toggle('show'); 
         }
@@ -460,9 +505,10 @@
             }
         }
 
-        function logout() {
-            localStorage.removeItem('isLoggedIn');
-            window.location.href = 'login.html';
+        window.logout = function() {
+            signOut(auth).then(() => {
+                window.location.reload(); // Will trigger onAuthStateChanged -> guest view
+            });
         }
 
         const darkModeToggle = document.getElementById('darkModeToggle');

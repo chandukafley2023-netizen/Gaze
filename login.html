@@ -23,6 +23,7 @@
         .link { color: var(--primary-color); font-weight: 600; cursor: pointer; }
         .hidden { display: none; }
         .error-msg { color: #ff5722; font-size: 0.85rem; margin-top: 10px; display: none; }
+        .success-msg { color: #4caf50; font-size: 0.85rem; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
@@ -37,7 +38,12 @@
             <div class="input-group"><input type="password" id="login-pass" class="input-field" placeholder="Password"></div>
             <button class="btn-primary" id="btn-login">Log In</button>
             <div class="error-msg" id="login-error"></div>
-            <div class="auth-switch">Don't have an account? <span class="link" onclick="toggleAuthMode()">Sign up</span></div>
+            
+            <div style="margin-top: 15px;">
+                <span class="link" style="font-size: 0.85rem;" onclick="switchView('forgot-form')">Forgot Password?</span>
+            </div>
+
+            <div class="auth-switch">Don't have an account? <span class="link" onclick="switchView('signup-form')">Sign up</span></div>
         </div>
 
         <!-- SIGN UP FORM -->
@@ -47,37 +53,56 @@
             <div class="input-group"><input type="password" id="signup-pass" class="input-field" placeholder="Password (Min 6 chars)"></div>
             <button class="btn-primary" id="btn-signup">Sign Up</button>
             <div class="error-msg" id="signup-error"></div>
-            <div class="auth-switch">Have an account? <span class="link" onclick="toggleAuthMode()">Log in</span></div>
+            <div class="auth-switch">Have an account? <span class="link" onclick="switchView('login-form')">Log in</span></div>
+        </div>
+
+        <!-- FORGOT PASSWORD FORM -->
+        <div id="forgot-form" class="hidden">
+            <div class="auth-title">Reset Password</div>
+            <p style="font-size: 0.9rem; color: var(--subtle-text); margin-bottom: 20px;">Enter your email to receive a password reset link.</p>
+            <div class="input-group"><input type="email" id="reset-email" class="input-field" placeholder="Email Address"></div>
+            <button class="btn-primary" id="btn-reset">Send Reset Link</button>
+            <div class="error-msg" id="reset-error"></div>
+            <div class="success-msg" id="reset-success">Check your email for the link!</div>
+            <div class="auth-switch"><span class="link" onclick="switchView('login-form')">Back to Log In</span></div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // --- UPDATED WITH YOUR REAL KEYS ---
         const firebaseConfig = {
-            apiKey: "AIzaSyBxqgmslZINTLdqF1LfC46eTMQMFyYFRr4",
-            authDomain: "artandshare-175b3.firebaseapp.com",
-            projectId: "artandshare-175b3",
-            storageBucket: "artandshare-175b3.firebasestorage.app",
-            messagingSenderId: "369391496856",
-            appId: "1:369391496856:web:da89ff9f8aaef36907aaed",
-            measurementId: "G-6PNY1VTYFX"
+          apiKey: "AIzaSyBxqgmslZINTLdqF1LfC46eTMQMFyYFRr4",
+          authDomain: "artandshare-175b3.firebaseapp.com",
+          projectId: "artandshare-175b3",
+          storageBucket: "artandshare-175b3.firebasestorage.app",
+          messagingSenderId: "369391496856",
+          appId: "1:369391496856:web:da89ff9f8aaef36907aaed",
+          measurementId: "G-6PNY1VTYFX"
         };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Check if already logged in (redirect to home)
+        // Check if already logged in
         onAuthStateChanged(auth, (user) => {
             if (user) window.location.href = 'index.html';
         });
 
-        // UI Logic
-        window.toggleAuthMode = () => {
-            document.getElementById('login-form').classList.toggle('hidden');
-            document.getElementById('signup-form').classList.toggle('hidden');
+        // UI Logic to switch views
+        window.switchView = (viewId) => {
+            // Hide all forms
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('signup-form').classList.add('hidden');
+            document.getElementById('forgot-form').classList.add('hidden');
+            
+            // Clear messages
+            document.querySelectorAll('.error-msg').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.success-msg').forEach(el => el.style.display = 'none');
+
+            // Show requested form
+            document.getElementById(viewId).classList.remove('hidden');
         };
 
         // Sign Up
@@ -88,7 +113,6 @@
             
             try {
                 await createUserWithEmailAndPassword(auth, email, pass);
-                // Redirect happens automatically via onAuthStateChanged
             } catch (error) {
                 errorDiv.textContent = error.message.replace('Firebase: ', '');
                 errorDiv.style.display = 'block';
@@ -105,6 +129,30 @@
                 await signInWithEmailAndPassword(auth, email, pass);
             } catch (error) {
                 errorDiv.textContent = "Invalid email or password.";
+                errorDiv.style.display = 'block';
+            }
+        });
+
+        // Reset Password
+        document.getElementById('btn-reset').addEventListener('click', async () => {
+            const email = document.getElementById('reset-email').value;
+            const errorDiv = document.getElementById('reset-error');
+            const successDiv = document.getElementById('reset-success');
+            
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            if(!email) {
+                errorDiv.textContent = "Please enter your email.";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                await sendPasswordResetEmail(auth, email);
+                successDiv.style.display = 'block';
+            } catch (error) {
+                errorDiv.textContent = error.message.replace('Firebase: ', '');
                 errorDiv.style.display = 'block';
             }
         });
